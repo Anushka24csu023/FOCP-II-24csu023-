@@ -1,0 +1,101 @@
+#include <iostream> 
+#include<math.h> 
+#include<string> 
+
+using namespace std; 
+
+string IsPrime(int num){ 
+
+    if(num<0){ 
+
+        return "Negative"; 
+
+    } 
+
+    else if(num==1){ 
+
+            return "NotPrime"; 
+
+    } 
+
+    else{ 
+
+        for(int i=2;i<=sqrt(num);i++){ 
+
+            if(num%i==0){ 
+
+                return "NotPrime"; 
+
+            } 
+
+        } 
+
+        return "Prime"; 
+
+    } 
+
+} 
+
+int main() 
+
+{ 
+
+   cout<<"--Program To Check Whether A Number Is Prime or Not--"<<endl; 
+   int num; 
+   re_enter: 
+   cout<<"Enter A Number : "; 
+   cin>>num; 
+   string Result; 
+   Result=IsPrime(num); 
+   if(Result=="Negative"){ 
+
+    cout<<endl<<"Sorry The Number is negative...Kindly Re-enter the Number"<<endl; 
+
+    goto re_enter; 
+
+   } 
+
+   else if(Result=="NotPrime"){ 
+
+    int sequence_num=1; 
+    cout<<endl<<"The Number is not Prime , But The Factors of the number are: "; 
+
+    for(int i=1;i<=num;i++){ 
+
+        if(num%i==0){ 
+
+            cout<<endl<<sequence_num<<") "<<i; 
+
+            sequence_num++; 
+
+        } 
+
+    } 
+
+   } 
+
+   else{ 
+
+    cout<<endl<<"The Number is Prime, and the Next Prime Number is: "; 
+
+    int nextNumber=num+1; 
+
+    while(IsPrime(nextNumber)!= "Prime"){ 
+
+        nextNumber+=1; 
+
+    } 
+
+    cout<<nextNumber; 
+
+  
+
+   } 
+
+  
+
+    return 0; 
+
+} 
+
+ 
