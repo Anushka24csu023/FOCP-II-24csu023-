@@ -1,0 +1,46 @@
+#include <iostream>
+
+using namespace std;
+
+int main(){
+
+    cout<<"--Program To Rotate A Matrix By 90 Degrees--"<<endl;
+    int size_;
+    cout<<"Enter The Size of the Matrix : ";
+    cin>>size_;
+    int arr[size_][size_];
+    int rotated[size_][size_];
+    cout<<endl<<"Enter The Elements of the Matrix : "<<endl;
+    for(int i=0;i<size_;i++){
+        for(int j=0;j<size_;j++){
+            cout<<"Enter Element for row number "<<i+1<<" and column number "<<j+1<<" for the matrix :";
+            cin>>arr[i][j];
+        }
+    }
+    cout<<endl<<"The Matrix You entered is : "<<endl;
+    for(int k=0;k<size_;k++){
+        for(int l=0;l<size_;l++){
+            cout<<arr[k][l]<<"\t";
+        }
+        cout<<endl;
+    }
+    cout<<endl<<"--The Matrix Rotated by 90 Degrees--"<<endl;
+    for(int m=0;m<size_;m++){
+        for(int n=0;n<size_;n++){
+            rotated[n][size_-1-m]=arr[m][n];
+        }
+    }
+
+    for(int t=0;t<size_;t++){
+        for(int a=0;a<size_;a++){
+        cout<<rotated[t][a]<<"\t";
+        }
+        cout<<endl;
+    }
+
+
+return 0;
+
+
+}
+
