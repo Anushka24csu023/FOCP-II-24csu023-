@@ -1,0 +1,66 @@
+#include <iostream>
+#include <cstdlib>
+
+using namespace std;
+
+int main() {
+    cout<<"--Program for Array Manipulation--"<<endl;
+    re_enter:
+    int n;
+    cout<<"Enter the size of the array: ";
+    cin>> n;
+    int*arr=(int*)malloc(n*sizeof(int));
+    if (arr==nullptr){
+        cout<<"Memory allocation failed!";
+        return 1;
+    }
+    cout<<"Enter Elements for the array: "<<endl;
+    for(int i=0;i<n;i++){
+        cout<<"Enter element number "<<i+1<<" for the array :";
+        cin>>arr[i];
+        cout<<endl;
+    }
+    cout<<"Original Array | Reversed Array"<<endl;
+    for(int j=0;j<n;j++){
+        cout<<arr[j]<<" | "<<arr[n-1-j]<<endl;
+    }
+    cout<<"--Displaying The Second Smallest and Largest Number In The Array--"<<endl;
+    if(n<2){
+        cout<<"Kindly Enter an Array with Elements more than 2"<<endl;
+        goto re_enter;
+    }
+    int smallest=arr[0];
+    int sec_smallest=arr[1];
+    int largest=arr[0];
+    int sec_largest=arr[1];
+    for(int k=0;k<n;k++){
+        if(arr[k]<smallest){
+            sec_smallest=smallest;
+            smallest=arr[k];
+        }
+        else if (arr[k]<sec_smallest && arr[k]!=smallest){
+            sec_smallest=arr[k];
+        }
+
+
+    if(arr[k]>largest){
+            sec_largest=largest;
+            largest=arr[k];
+        }
+        else if (arr[k]>sec_largest && arr[k]!=largest){
+            sec_largest=arr[k];
+
+    }
+    }
+    cout<<"The Second Smallest Number in the Array is : "<<sec_smallest<<endl;
+    cout<<"The Second Largest Number in the Array is :"<<sec_largest;
+
+
+
+
+    return 0;
+}
+
+
+
+
