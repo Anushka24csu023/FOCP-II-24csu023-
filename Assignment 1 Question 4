@@ -1,0 +1,44 @@
+#include <iostream>
+
+using namespace std;
+
+void Spiral_Matrix(int size_){
+    int arr[size_][size_]={0};
+    int top=0,bottom=size_ -1,left=0,right=size_ -1;
+    int num=1;
+    while(top<=bottom&&left<=right){
+        for(int i=left;i<=right;i++){
+                arr[top][i]=num++;
+        }
+        top++;
+        for(int j=top;j<=bottom;j++){
+                arr[j][right]=num++;
+        }
+        right--;
+        for(int k=right;k>=left;k--){
+                arr[bottom][k]=num++;
+        }
+        bottom--;
+        for(int l=bottom;l>=top;l--){
+                arr[l][left]=num++;
+        }
+        left++;
+    }
+    cout<<endl;
+    for(int m=0;m<size_;m++){
+        for (int n=0;n<size_;n++){
+            cout<<arr[m][n]<<"\t";
+        }
+        cout<<endl;
+    }
+}
+
+int main(){
+    cout<<"--Program To Print Spiral Matrix--"<<endl;
+    int size_;
+    cout<<"Enter size of matrix: ";
+    cin>>size_;
+    Spiral_Matrix(size_);
+    return 0;
+}
+
