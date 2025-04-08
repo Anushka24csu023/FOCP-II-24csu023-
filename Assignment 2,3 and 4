@@ -1,0 +1,223 @@
+#include<iostream>
+#include<vector>
+#include<string>
+
+
+using namespace std;
+
+class Student{
+
+    string student_name;
+    string student_rollno;
+    float CGPA;
+    vector<string> courses;
+
+public:
+    //Default Constructor
+
+    Student(){
+
+        student_name="Unknown";
+        student_rollno="Unknown";
+        cout<<"CGPA is Unknown"<<endl;
+        cout<<"Courses of the student are unknown"<<endl;
+        cout<<endl<<"Default student created with unknown values";
+
+
+    }
+
+
+    //Parameterized Constructor
+
+    Student(string name,string rno,float cgpa,vector<string>courseList){
+
+        student_name=name;
+        student_rollno=rno;
+        CGPA=(cgpa>=0.0 && cgpa<=10.0)? cgpa : 0.0;
+        courses=courseList;
+
+    }
+
+
+    //Copy Constructor
+
+    Student(const Student& s){
+
+        student_name=s.student_name;
+        student_rollno=s.student_rollno;
+        CGPA=s.CGPA;
+        courses=s.courses;
+
+    }
+
+    //Destructor will be called implicitly
+
+
+    //Method to add a new course
+
+    void addCourse(string course){
+
+        for(string existingCourse : courses){
+
+                if(existingCourse==course){
+                    cout<<"This course already exists"<<endl;
+                    return;
+                }
+
+
+        }
+
+        courses.push_back(course);
+        cout<<"Course added : "<<course<<endl;
+
+
+    }
+
+
+    //Method to updaye CGPA
+
+    void updateCGPA(float newCGPA){
+
+        if(newCGPA>=0.0 && newCGPA<=10.0){
+           CGPA=newCGPA;
+           cout<<"CGPA updated to "<<CGPA<<endl;
+           }
+           else{
+            cout<<"Invalid CGPA"<<endl;
+           }
+
+
+    }
+
+    //Method to display student info
+
+    void display(){
+
+        cout<<endl<<"--Student Information is as below--"<<endl;
+        cout<<"Name of the student is : "<<student_name<<endl;
+        cout<<"Roll Number of the student is : "<<student_rollno<<endl;
+        cout<<"CGPA of student is : "<<CGPA<<endl;
+        cout<<"List of courses the student is enrolled in is as follows : "<<endl;
+        for(string course : courses){
+            cout<<"-"<<" "<<course<<endl;
+        }
+
+    }
+
+    //Method to return the student roll number
+
+    string getRollNo(){
+
+        return student_rollno;
+
+    }
+
+
+};
+
+//New class to manage and store student's data
+
+class StudentManagementSystem{
+
+    vector<Student> students;
+
+public:
+
+    //Default/Do-nothing constructor will be called implicitly and a destructor too
+
+    //Method to add a student record in a vector called students whose datatype is class "Student"
+
+    void addStudent(Student s){
+        students.push_back(s);
+        cout<<endl<<"Student added Successfully"<<endl;
+    }
+
+    //Method to search for a student record in students vector
+
+    void searchStudent(string rollno){
+
+        for(Student& s : students){               //Iterating through students vector by reference
+
+                if(s.getRollNo()== rollno){
+                    cout<<endl<<"Student Found"<<endl;
+                    s.display();
+                    return;
+                }
+
+        }
+        cout<<endl<<"Student with roll number "<<rollno<<" is not found"<<endl;
+    }
+
+    //Method to display all student records in the vector students
+
+    void displayAllStudents(){
+        for(Student& s : students){
+            s.display();
+            cout<<"------------------"<<endl;
+        }
+    }
+
+};
+
+//Using Classes in our Main function
+
+int main(){
+    cout<<"----Student Management Program----";
+
+   StudentManagementSystem system1;
+    int numStudents;
+    cout<<endl<<"How many students do you want to add? : ";
+    cin>>numStudents;
+    cin.ignore();
+
+
+    for(int i=0;i<numStudents;i++){
+        string name;
+        string rollno;
+        float cgpa;
+        int numCourses;
+        vector<string> courses;
+
+        cout<<endl<<"Enter details for Student "<<i+1<<" : ";
+        cout<<endl<<"Name: ";
+        getline(cin,name);
+        cout<<endl<<"Roll Number (alpha-numeric) : ";
+        getline(cin,rollno);
+        cout<<endl<<"CGPA : ";
+        cin>>cgpa;
+        cin.ignore();
+        cout<<endl<<"How many courses is the student enrolled in? : ";
+        cin>>numCourses;
+        cin.ignore();
+
+        for(int j=0;j<numCourses;j++){
+            string course;
+            cout<<endl<<"Enter course (subject) "<<j+1<<": ";
+            getline(cin,course);
+            courses.push_back(course);
+        }
+
+       //Adding the student details in Student class and recording it in StudentManagementClass
+        Student s(name,rollno,cgpa,courses);
+        system1.addStudent(s);
+    }
+
+
+    // Displaying all records
+    cout<<endl<<"Displaying all student records : "<<endl;
+    system1.displayAllStudents();
+
+    //Searching for a specific student
+    string searchRNO;
+    cout<<endl<<"Enter a roll number to search for a student: ";
+    getline(cin,searchRNO);
+    system1.searchStudent(searchRNO);
+
+
+
+return 0;
+
+
+}
+
+
