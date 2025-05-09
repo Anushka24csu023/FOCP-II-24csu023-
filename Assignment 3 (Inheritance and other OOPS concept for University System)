@@ -78,7 +78,8 @@ public:
     }
     
     string getIDCardInfo() const override {  //overridden method from Person class
-    return getIDCardInfo() + ", Role: Student, Program: " + program;
+    return Person::getIDCardInfo() + ", Role: Student, Program: " + program;
+
 }
 
     string getEnrollmentDate() const { return enrollment_date; }
@@ -164,11 +165,39 @@ public:
     }
     
     string getIDCardInfo() const override { //overridden method from Person class
-    return getIDCardInfo() + ", Role: Professor, Dept: " + department;
+    return Person::getIDCardInfo() + ", Role: Student, Program: " + program;
+
 }
 
 
 
+};
+
+class Course //Forward Declaration
+class Classroom {
+private:
+    string roomNumber;
+    int capacity;
+    vector<Course*> scheduledCourses;  // Courses scheduled in this room
+
+public:
+    Classroom(const string& roomNumber, int capacity)
+        : roomNumber(roomNumber), capacity(capacity) {}
+
+    void addCourse(Course* course) {
+        scheduledCourses.push_back(course);
+    }
+
+    string getRoomNumber() const { return roomNumber; }
+    int getCapacity() const { return capacity; }
+
+    void displayClassroomInfo() const {
+        cout << "Room Number: " << roomNumber << ", Capacity: " << capacity << endl;
+        cout << "Scheduled Courses:\n";
+        for (const auto& course : scheduledCourses) {
+            cout << " - " << course->getCourseCode() << ": " << course->getCourseName() << endl;
+        }
+    }
 };
 
 class Course {
@@ -230,7 +259,31 @@ public:
 
     Classroom* getClassroom() const {
         return classroom;
+
     }
+
+void displayCourseInfo() const {
+    cout << "Course Code: " << code << "\n";
+    cout << "Title: " << title << "\n";
+    cout << "Description: " << description << "\n";
+    cout << "Credits: " << credits << "\n";
+
+    if (instructor) {
+        cout << "Instructor: " << instructor->getName() << "\n";
+    } else {
+        cout << "Instructor: Not assigned\n";
+    }
+
+    if (classroom) {
+        cout << "Classroom: " << classroom->getRoomNumber()
+             << ", Capacity: " << classroom->getCapacity() << "\n";
+    } else {
+        cout << "Classroom: Not assigned\n";
+    }
+
+    cout << "----------------------------------\n";
+}
+
 };
 
 class Department {
