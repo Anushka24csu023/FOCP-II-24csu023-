@@ -476,7 +476,7 @@ int main() {
     University myUniversity("The NorthCap University");
 
     // Add students
-    Student student1("Anushka Khandelwal", "24CSU023", "555-1234", 20, "2024-07-29", "Computer Science", 3.5);
+    Student student1("Anushka Khandelwal", "24CSU023", "555-1234", 19, "2024-07-29", "Computer Science", 3.5);
     Student student2("Preeti Kumari", "24CSU021", "555-5678", 21, "2022-02-01", "Mathematics", 3.8);
 
     myUniversity.addStudent(student1);
