@@ -1,0 +1,529 @@
+//Final assignment 4 or 2,3&4 combined
+#include <iostream>
+#include <vector>
+#include <string>
+#include <memory>
+#include <algorithm>
+
+using namespace std;
+
+// Base class for all persons in the university
+class Person {
+protected:
+    string name;
+    string id;
+    string contact;
+    int age;
+
+public:
+    // Constructor
+    Person(string name, string id, string contact, int age)
+        : name(name), id(id), contact(contact), age(age) {
+        // Simple validation
+        if (name.empty() || id.empty() || contact.empty() || age <= 0) {
+            cout << "Error: Invalid person data" << endl;
+            exit(1);
+        }
+    }
+
+    // Virtual destructor for proper inheritance
+    virtual ~Person() {}
+
+    // Getters
+    string getName() const { return name; }
+    string getID() const { return id; }
+    string getContact() const { return contact; }
+    int getAge() const { return age; }
+
+    // Display method - can be overridden by derived classes
+    virtual void displayInfo() const {
+        cout << "Name: " << name << endl;
+        cout << "ID: " << id << endl;
+        cout << "Contact: " << contact << endl;
+        cout << "Age: " << age << endl;
+    }
+};
+
+// Forward declarations
+class Course;
+
+// Student class inheriting from Person
+class Student : public Person {
+private:
+    string enrollmentDate;
+    string program;
+    double gpa;
+    vector<Course*> enrolledCourses;
+
+public:
+    // Constructor
+    Student(string name, string id, string contact, int age,
+            string enrollmentDate, string program, double gpa)
+        : Person(name, id, contact, age),
+          enrollmentDate(enrollmentDate), program(program), gpa(gpa) {
+        // Validate GPA
+        if (gpa < 0.0 || gpa > 4.0) {
+            cout << "Error: Invalid GPA (must be between 0 and 4)" << endl;
+            exit(1);
+        }
+    }
+
+    // Getters
+    string getEnrollmentDate() const { return enrollmentDate; }
+    string getProgram() const { return program; }
+    double getGPA() const { return gpa; }
+    vector<Course*> getCourses() const { return enrolledCourses; }
+
+    // Setters
+    void setGPA(double newGPA) {
+        if (newGPA >= 0.0 && newGPA <= 4.0) {
+            gpa = newGPA;
+        } else {
+            cout << "Error: Invalid GPA value" << endl;
+        }
+    }
+
+    // Enroll in a course
+    void enrollInCourse(Course* course);
+
+    // Override display method
+    void displayInfo() const override;
+};
+
+// Professor class inheriting from Person
+class Professor : public Person {
+private:
+    string department;
+    string specialization;
+    vector<Course*> teachingCourses;
+
+public:
+    // Constructor
+    Professor(string name, string id, string contact, int age,
+              string department, string specialization)
+        : Person(name, id, contact, age),
+          department(department), specialization(specialization) {}
+
+    // Getters
+    string getDepartment() const { return department; }
+    string getSpecialization() const { return specialization; }
+    vector<Course*> getCourses() const { return teachingCourses; }
+
+    // Assign a course to teach
+    void assignCourse(Course* course);
+
+    // Override display method
+    void displayInfo() const override;
+};
+
+// Course class
+class Course {
+private:
+    string code;
+    string title;
+    string description;
+    int credits;
+    Professor* instructor;
+    vector<Student*> students;
+    vector<pair<string, double>> grades; // Student ID, grade
+
+    static const int MAX_STUDENTS = 30;
+
+public:
+    // Constructor
+    Course(string code, string title, string description, int credits)
+        : code(code), title(title), description(description), credits(credits), instructor(nullptr) {
+        if (code.empty() || title.empty() || credits <= 0) {
+            cout << "Error: Invalid course data" << endl;
+            exit(1);
+        }
+    }
+
+    // Getters
+    string getCode() const { return code; }
+    string getTitle() const { return title; }
+    string getDescription() const { return description; }
+    int getCredits() const { return credits; }
+    Professor* getInstructor() const { return instructor; }
+    vector<Student*> getStudents() const { return students; }
+
+    // Assign instructor to course
+    void setInstructor(Professor* prof) {
+        instructor = prof;
+    }
+
+    // Enroll a student in the course
+    bool enrollStudent(Student* student) {
+        if (!student) {
+            cout << "Error: Invalid student" << endl;
+            return false;
+        }
+
+        // Check if class is full
+        if (students.size() >= MAX_STUDENTS) {
+            cout << "Error: Course is full" << endl;
+            return false;
+        }
+
+        // Check if student is already enrolled
+        for (Student* s : students) {
+            if (s->getID() == student->getID()) {
+                cout << "Student already enrolled in this course" << endl;
+                return false;
+            }
+        }
+
+        // Add student and initialize grade
+        students.push_back(student);
+        grades.push_back({student->getID(), -1.0}); // -1 means not graded yet
+        return true;
+    }
+
+    // Assign grade to a student
+    bool assignGrade(string studentID, double grade) {
+        if (grade < 0.0 || grade > 100.0) {
+            cout << "Error: Grade must be between 0 and 100" << endl;
+            return false;
+        }
+
+        for (auto& g : grades) {
+            if (g.first == studentID) {
+                g.second = grade;
+                return true;
+            }
+        }
+
+        cout << "Error: Student not enrolled in this course" << endl;
+        return false;
+    }
+
+    // Get a student's grade
+    double getStudentGrade(string studentID) const {
+        for (const auto& g : grades) {
+            if (g.first == studentID) {
+                return g.second;
+            }
+        }
+        return -1.0; // Student not found or not graded
+    }
+
+    // Display course information
+    void displayInfo() const {
+        cout << "Course Code: " << code << endl;
+        cout << "Title: " << title << endl;
+        cout << "Description: " << description << endl;
+        cout << "Credits: " << credits << endl;
+        cout << "Instructor: " << (instructor ? instructor->getName() : "Not assigned") << endl;
+        cout << "Enrolled Students: " << students.size() << "/" << MAX_STUDENTS << endl;
+    }
+};
+
+// Implementation of Student methods that depend on Course definition
+void Student::enrollInCourse(Course* course) {
+    if (course) {
+        if (course->enrollStudent(this)) {
+            enrolledCourses.push_back(course);
+        }
+    }
+}
+
+void Student::displayInfo() const {
+    Person::displayInfo();
+    cout << "Enrollment Date: " << enrollmentDate << endl;
+    cout << "Program: " << program << endl;
+    cout << "GPA: " << gpa << endl;
+    cout << "Enrolled in " << enrolledCourses.size() << " courses" << endl;
+}
+
+// Implementation of Professor methods that depend on Course definition
+void Professor::assignCourse(Course* course) {
+    if (course) {
+        course->setInstructor(this);
+        teachingCourses.push_back(course);
+    }
+}
+
+void Professor::displayInfo() const {
+    Person::displayInfo();
+    cout << "Department: " << department << endl;
+    cout << "Specialization: " << specialization << endl;
+    cout << "Teaching " << teachingCourses.size() << " courses" << endl;
+}
+
+// University class to manage everything
+class University {
+private:
+    string name;
+    vector<Student> students;
+    vector<Professor> professors;
+    vector<Course> courses;
+
+public:
+    // Constructor
+    University(string name) : name(name) {
+        if (name.empty()) {
+            cout << "Error: University name cannot be empty" << endl;
+            exit(1);
+        }
+    }
+
+    // Add a new student
+    void addStudent(const Student& student) {
+        // Check if ID already exists
+        for (const Student& s : students) {
+            if (s.getID() == student.getID()) {
+                cout << "Error: Student ID already exists" << endl;
+                return;
+            }
+        }
+        students.push_back(student);
+        cout << "Student " << student.getName() << " added successfully." << endl;
+    }
+
+    // Add a new professor
+    void addProfessor(const Professor& professor) {
+        // Check if ID already exists
+        for (const Professor& p : professors) {
+            if (p.getID() == professor.getID()) {
+                cout << "Error: Professor ID already exists" << endl;
+                return;
+            }
+        }
+        professors.push_back(professor);
+        cout << "Professor " << professor.getName() << " added successfully." << endl;
+    }
+
+    // Add a new course
+    void addCourse(const Course& course) {
+        // Check if course code already exists
+        for (const Course& c : courses) {
+            if (c.getCode() == course.getCode()) {
+                cout << "Error: Course code already exists" << endl;
+                return;
+            }
+        }
+        courses.push_back(course);
+        cout << "Course " << course.getTitle() << " added successfully." << endl;
+    }
+
+    // Find student by ID
+    Student* findStudent(string id) {
+        for (auto& student : students) {
+            if (student.getID() == id) {
+                return &student;
+            }
+        }
+        return nullptr;
+    }
+
+    // Find professor by ID
+    Professor* findProfessor(string id) {
+        for (auto& professor : professors) {
+            if (professor.getID() == id) {
+                return &professor;
+            }
+        }
+        return nullptr;
+    }
+
+    // Find course by code
+    Course* findCourse(string code) {
+        for (auto& course : courses) {
+            if (course.getCode() == code) {
+                return &course;
+            }
+        }
+        return nullptr;
+    }
+
+    // Enroll a student in a course
+    void enrollStudent(string studentID, string courseCode) {
+        Student* student = findStudent(studentID);
+        Course* course = findCourse(courseCode);
+
+        if (!student) {
+            cout << "Error: Student not found" << endl;
+            return;
+        }
+        if (!course) {
+            cout << "Error: Course not found" << endl;
+            return;
+        }
+
+        student->enrollInCourse(course);
+    }
+
+    // Assign a professor to a course
+    void assignProfessor(string professorID, string courseCode) {
+        Professor* professor = findProfessor(professorID);
+        Course* course = findCourse(courseCode);
+
+        if (!professor) {
+            cout << "Error: Professor not found" << endl;
+            return;
+        }
+        if (!course) {
+            cout << "Error: Course not found" << endl;
+            return;
+        }
+
+        professor->assignCourse(course);
+        cout << "Professor " << professor->getName() << " assigned to " << course->getTitle() << endl;
+    }
+
+    // Assign a grade to a student in a course
+    void assignGrade(string studentID, string courseCode, double grade) {
+        Student* student = findStudent(studentID);
+        Course* course = findCourse(courseCode);
+
+        if (!student) {
+            cout << "Error: Student not found" << endl;
+            return;
+        }
+        if (!course) {
+            cout << "Error: Course not found" << endl;
+            return;
+        }
+
+        if (course->assignGrade(studentID, grade)) {
+            cout << "Grade " << grade << " assigned to " << student->getName()
+                 << " in " << course->getTitle() << endl;
+
+            // Recalculate GPA (simplified version)
+            double totalGrade = 0.0;
+            int courseCount = 0;
+
+            for (Course* c : student->getCourses()) {
+                double studentGrade = c->getStudentGrade(studentID);
+                if (studentGrade >= 0) {
+                    // Convert to 4.0 scale (simple conversion)
+                    double gradePoints = 0.0;
+                    if (studentGrade >= 90) gradePoints = 4.0;
+                    else if (studentGrade >= 80) gradePoints = 3.0;
+                    else if (studentGrade >= 70) gradePoints = 2.0;
+                    else if (studentGrade >= 60) gradePoints = 1.0;
+
+                    totalGrade += gradePoints;
+                    courseCount++;
+                }
+            }
+
+            if (courseCount > 0) {
+                student->setGPA(totalGrade / courseCount);
+            }
+        }
+    }
+
+    // Display all students
+    void displayAllStudents() const {
+        cout << "\n===== All Students =====" << endl;
+        if (students.empty()) {
+            cout << "No students registered." << endl;
+            return;
+        }
+
+        for (const Student& student : students) {
+            cout << "\n-----------------------" << endl;
+            student.displayInfo();
+        }
+    }
+
+    // Display all professors
+    void displayAllProfessors() const {
+        cout << "\n===== All Professors =====" << endl;
+        if (professors.empty()) {
+            cout << "No professors registered." << endl;
+            return;
+        }
+
+        for (const Professor& professor : professors) {
+            cout << "\n-----------------------" << endl;
+            professor.displayInfo();
+        }
+    }
+
+    // Display all courses
+    void displayAllCourses() const {
+        cout << "\n===== All Courses =====" << endl;
+        if (courses.empty()) {
+            cout << "No courses available." << endl;
+            return;
+        }
+
+        for (const Course& course : courses) {
+            cout << "\n-----------------------" << endl;
+            course.displayInfo();
+        }
+    }
+
+    // Display university information
+    void displayUniversityInfo() const {
+        cout << "\n========================================" << endl;
+        cout << "University Name: " << name << endl;
+        cout << "Number of Students: " << students.size() << endl;
+        cout << "Number of Professors: " << professors.size() << endl;
+        cout << "Number of Courses: " << courses.size() << endl;
+        cout << "========================================\n" << endl;
+    }
+};
+
+int main() {
+    cout << "========================================" << endl;
+    cout << "    UNIVERSITY MANAGEMENT SYSTEM" << endl;
+    cout << "========================================" << endl;
+
+    // Create university
+    University myUniversity("Sample University");
+
+    // Add students
+    Student student1("Anushka Khandelwal", "24CSU023", "555-1234", 20, "2023-09-01", "Computer Science", 3.5);
+    Student student2("Preeti Kumari", "24CSU021", "555-5678", 21, "2022-09-01", "Mathematics", 3.8);
+
+    myUniversity.addStudent(student1);
+    myUniversity.addStudent(student2);
+
+    // Add professors
+    Professor prof1("Dr. Richa Singh", "P2001", "555-9876", 45, "Computer Science", "Artificial Intelligence");
+    Professor prof2("Dr. Monica Aggarwal", "P2002", "555-4321", 50, "Mathematics", "Number Theory");
+
+    myUniversity.addProfessor(prof1);
+    myUniversity.addProfessor(prof2);
+
+    // Add courses
+    Course course1("CS101", "Introduction to Programming", "Basic programming concepts", 3);
+    Course course2("MATH201", "Calculus I", "Limits, derivatives, and integrals", 4);
+    Course course3("CS201", "Data Structures", "Arrays, linked lists, trees, etc.", 3);
+
+    myUniversity.addCourse(course1);
+    myUniversity.addCourse(course2);
+    myUniversity.addCourse(course3);
+
+    // Assign professors to courses
+    myUniversity.assignProfessor("P2001", "CS101");
+    myUniversity.assignProfessor("P2001", "CS201");
+    myUniversity.assignProfessor("P2002", "MATH201");
+
+    // Enroll students in courses
+    myUniversity.enrollStudent("24CSU023", "CS101");
+    myUniversity.enrollStudent("24CSU023", "MATH201");
+    myUniversity.enrollStudent("24CSU021", "CS101");
+    myUniversity.enrollStudent("24CSU021", "MATH201");
+    myUniversity.enrollStudent("24CSU021", "CS201");
+
+    // Assign grades
+    myUniversity.assignGrade("24CSU023", "CS101", 85.0);
+    myUniversity.assignGrade("24CSU023", "MATH201", 78.0);
+    myUniversity.assignGrade("24CSU021", "CS101", 92.0);
+    myUniversity.assignGrade("24CSU021", "MATH201", 95.0);
+    myUniversity.assignGrade("24CSU021", "CS201", 88.0);
+
+    // Display reports
+    myUniversity.displayUniversityInfo();
+    myUniversity.displayAllStudents();
+    myUniversity.displayAllProfessors();
+    myUniversity.displayAllCourses();
+
+    cout << "\nProgram executed successfully!" << endl;
+    return 0;
+}
+
