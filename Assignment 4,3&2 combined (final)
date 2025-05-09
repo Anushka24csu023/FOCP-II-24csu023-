@@ -483,7 +483,7 @@ int main() {
     myUniversity.addStudent(student2);
 
     // Add professors
-    Professor prof1("Dr. Richa Singh", "P2001", "555-9876", 45, "Computer Science", "Artificial Intelligence");
+    Professor prof1("Dr. Richa Singh", "P2001", "555-9876", 27, "Computer Science", "Artificial Intelligence");
     Professor prof2("Dr. Monica Aggarwal", "P2002", "555-4321", 50, "Mathematics", "Number Theory");
 
     myUniversity.addProfessor(prof1);
